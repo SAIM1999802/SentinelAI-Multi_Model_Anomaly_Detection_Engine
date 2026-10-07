@@ -1,0 +1,57 @@
+.table-card {
+    background: #0d1527;
+    border: 1px solid #1e293b;
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+  }
+  
+  .table-title {
+    color: #f8fafc;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+  }
+  
+  .anomaly-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  
+  .anomaly-table th {
+    background-color: #070c14;
+    color: #64748b;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #1e293b;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+  }
+  
+  .anomaly-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #1e293b;
+  }
+  
+  .row-anomaly {
+    background-color: rgba(255, 51, 102, 0.12) !important;
+    color: #ff3366 !important;
+    font-weight: 600;
+    box-shadow: inset 0 0 10px rgba(255, 51, 102, 0.1);
+  }
+  
+  .badge-red {
+    background-color: #ff3366;
+    color: #fff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+  }
+  
+  .badge-green {
+    background-color: #10b981;
+    color: #fff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+  }

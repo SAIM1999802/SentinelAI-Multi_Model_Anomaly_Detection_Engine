@@ -1,0 +1,45 @@
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  
+  .summary-card {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    padding: 1.2rem;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .summary-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  .card-value {
+    fontSize: 1.5rem;
+    font-weight: bold;
+    color: #f8fafc;
+    margin: 0;
+  }
+  
+  .active-model {
+    border-color: #0284c7;
+  }
+  
+  .model-value {
+    color: #38bdf8;
+    font-size: 1.1rem;
+  }
+  
+  .anomaly-card {
+    border-color: #ef4444;
+  }
+  
+  .anomaly-value {
+    color: #ef4444;
+  }

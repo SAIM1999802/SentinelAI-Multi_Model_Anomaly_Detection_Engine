@@ -4,6 +4,7 @@ from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.ml.isolation_forest import execute_isolation_forest
 from app.ml.lof import execute_lof
+from app.ml.oc_svm import execute_oc_svm
 
 app = FastAPI(title="SentinelAI - Multi-Model Anomaly Detection Engine")
 
@@ -45,6 +46,7 @@ async def detect_anomalies(
     contamination: float = Form(0.05),
     n_estimators: int = Form(100),
     n_neighbors: int = Form(20),
+    kernel: str=Form("rdf")
 ):
     try:
         content = await file.read()
@@ -55,6 +57,12 @@ async def detect_anomalies(
                 df = df,
                 contamination = contamination,
                 n_neighbors = n_neighbors
+            )
+        elif algorithm == "oc_svm":
+            results = execute_oc_svm(
+                df = df,
+                contamination = contamination,
+                kernel = kernel
             )
         else:
             results = execute_isolation_forest(
