@@ -1,0 +1,149 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.1rem 2rem;
+  min-height: 84px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 50;
+}
+
+/* Logo */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo-img {
+  height: 56px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Links */
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar-item {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding-bottom: 0.2rem;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.navbar-item:hover,
+.navbar-item.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* User menu */
+.navbar-user {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.35rem 0.6rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.navbar-user-btn:hover {
+  background: var(--card);
+  border-color: var(--line);
+}
+
+.navbar-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.navbar-username {
+  color: var(--text);
+}
+
+.navbar-caret {
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+
+.navbar-caret.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.navbar-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 180px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.navbar-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.navbar-dropdown-item:hover {
+  background: var(--card);
+}
+
+.navbar-dropdown-item.danger {
+  color: var(--danger);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 700px) {
+  .navbar {
+    padding: 0.8rem 1rem;
+    min-height: 68px;
+  }
+  .navbar-logo-img {
+    height: 42px;
+  }
+  .navbar-links {
+    display: none;
+  }
+  .navbar-username {
+    display: none;
+  }
+}

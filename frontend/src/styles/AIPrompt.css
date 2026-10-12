@@ -1,0 +1,94 @@
+.ai-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-title {
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  color: var(--text);
+}
+
+.ai-card form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ai-input {
+  width: 100%;
+  flex: 1;
+  min-height: 120px;
+  padding: 0.8rem;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  resize: vertical;
+  outline: none;
+}
+
+.ai-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--glow);
+}
+
+.ai-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+.ai-generate-btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: var(--btn-text);
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--glow);
+  transition: filter 0.2s ease;
+}
+
+.ai-generate-btn:hover {
+  filter: brightness(1.1);
+}
+
+.ai-generate-btn:disabled {
+  background: var(--line);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.ai-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.ai-response {
+  margin-top: 1rem;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}

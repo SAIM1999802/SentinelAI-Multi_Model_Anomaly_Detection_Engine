@@ -1,30 +1,113 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import {
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  AreaChart,
-  Area,
-  Legend
-} from "recharts";
 
-import Sidebar from "../components/Sidebar";
-import FileUpload from "../components/FileUpload";
+import Navbar from "../components/Navbar";
+import GraphCard from "../components/Graphcard";
 import SummaryCards from "../components/SummaryCards";
+import AIPrompt from "../components/AIPrompt";
+import FileUpload from "../components/FileUpload";
 import AnomalyTable from "../components/AnomalyTable";
+import SavedAnalyses from "./SavedAnalyses";
+
 import "../styles/Dashboard.css";
 
-export default function Dashboard() {
-  const [data, setData] = useState(null);
+const API_URL = "http://127.0.0.1:8000";
+
+const authHeaders = () => ({
+  Authorization: `Bearer ${localStorage.getItem("sentinel_token")}`,
+});
+
+/* ===== REFRESH CACHE (sirf is tab ke liye) ===== */
+
+const CACHE_KEY = "sentinel_last_analysis";
+const CACHE_MAX_RECORDS = 2000; // isse bari files cache nahi hoti
+
+const loadCache = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem(CACHE_KEY)) || null;
+  } catch {
+    return null;
+  }
+};
+
+export default function Dashboard({
+  user,
+  onLogout,
+  onDataUpdate,
+  initialData,
+  initialRun,
+  onNavigate,
+  activeTab,
+}) {
+  const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [saves, setSaves] = useState([]);
+
+  const [data, setData] = useState(
+    () => initialData ?? loadCache()?.data ?? null,
+  );
+  const [lastRun, setLastRun] = useState(
+    () => initialRun ?? loadCache()?.lastRun ?? null,
+  );
+  const [saveState, setSaveState] = useState(
+    () => loadCache()?.saveState ?? "idle",
+  ); // idle | saving | saved | error
+  /* Refresh par data wapas laane ke liye cache */
+  useEffect(() => {
+    try {
+      if (data && (data.records?.length ?? 0) <= CACHE_MAX_RECORDS) {
+        sessionStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({
+            data,
+            lastRun,
+            saveState: saveState === "saving" ? "idle" : saveState,
+          }),
+        );
+      } else {
+        sessionStorage.removeItem(CACHE_KEY);
+      }
+    } catch {
+      /* storage full ho to ignore karein */
+    }
+  }, [data, lastRun, saveState]);
+
+  /* Logout par cache saaf karein */
+  const logout = () => {
+    sessionStorage.removeItem(CACHE_KEY);
+    onLogout();
+  };
+
+  /* Token invalid ya expire ho to khud logout */
+  const handleAuthError = (err) => {
+    if (err.response?.status === 401) {
+      logout();
+      return true;
+    }
+    return false;
+  };
+
+  /* ===== SAVED LIST ===== */
+
+  const fetchSaves = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/saves`, {
+        headers: authHeaders(),
+      });
+      setSaves(res.data);
+    } catch (err) {
+      if (handleAuthError(err)) return;
+      console.error("Could not load saved analyses:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSaves();
+  }, [fetchSaves]);
+
+  /* ===== ANALYZE ===== */
 
   const handleAnalyze = async (options) => {
     setLoading(true);
@@ -40,125 +123,174 @@ export default function Dashboard() {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/detect-anomalies",
+        `${API_URL}/api/detect-anomalies`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
       );
+
+      const run = {
+        fileName: options.file.name,
+        algorithm: options.algorithm,
+        contamination: options.contamination,
+      };
+
       setData(response.data);
+      setLastRun(run);
+      setSaveState("idle");
+
+      if (onDataUpdate) {
+        onDataUpdate(response.data, run); // App ko result aur run dono do
+      }
     } catch (err) {
-      setError(
-        err.response?.data?.detail || "Analysis failed. Make sure Backend is active."
-      );
+      console.error("Analyze error:", err);
+
+      let message;
+      if (err.response) {
+        const detail = err.response.data?.detail;
+        message =
+          (typeof detail === "string" ? detail : null) ||
+          `Server error (${err.response.status}). Check the backend terminal.`;
+      } else if (err.request) {
+        message =
+          "No response from backend. It may be stopped, crashed, or the file is too large.";
+      } else {
+        message = `Something broke in the app: ${err.message}`;
+      }
+
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Chart Data preparation
-  const scatterData = data?.records?.map((r, index) => ({
-    x: index + 1,
-    y: r.anomaly_score,
-    is_anomaly: r.is_anomaly,
-  })) || [];
+  /* ===== SAVE (UI -> DB) ===== */
 
-  const barData = data?.summary
-    ? [
+  const handleSave = async () => {
+    if (!data?.records?.length) return;
+    setSaveState("saving");
+    setError("");
+
+    try {
+      await axios.post(
+        `${API_URL}/api/saves`,
         {
-          name: "Records",
-          Normal: data.summary.total_records - data.summary.anomalies_found,
-          Anomaly: data.summary.anomalies_found,
+          file_name: lastRun?.fileName,
+          file_type: "csv",
+          model_name:
+            lastRun?.algorithm ||
+            data?.summary?.algorithm ||
+            "isolation_forest",
+          contamination: lastRun?.contamination,
+          records: data.records,
         },
-      ]
-    : [];
+        { headers: authHeaders() },
+      );
+      setSaveState("saved");
+      fetchSaves();
+    } catch (err) {
+      if (handleAuthError(err)) return;
+      setSaveState("error");
+      setError(err.response?.data?.detail || "Could not save analysis.");
+    }
+  };
+
+  /* ===== LOAD (DB -> UI) ===== */
+
+  const handleLoadSave = async (id) => {
+    setError("");
+    try {
+      const res = await axios.get(`${API_URL}/api/saves/${id}`, {
+        headers: authHeaders(),
+      });
+
+      const loaded = { records: res.data.records, summary: res.data.summary };
+
+      setData(loaded);
+      setLastRun(null);
+      setSaveState("saved"); // pehle se saved hai, dobara save ki zaroorat nahi
+
+      if (onDataUpdate) onDataUpdate(loaded, null); // Analysis page ke liye bhi
+    } catch (err) {
+      if (handleAuthError(err)) return;
+      setError(err.response?.data?.detail || "Could not load saved analysis.");
+    }
+  };
+
+  /* ===== DELETE ===== */
+
+  const handleDeleteSave = async (id) => {
+    if (!window.confirm("Delete this saved analysis?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/saves/${id}`, {
+        headers: authHeaders(),
+      });
+      fetchSaves();
+    } catch (err) {
+      if (handleAuthError(err)) return;
+      setError(err.response?.data?.detail || "Could not delete analysis.");
+    }
+  };
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
-
-      <main className="dashboard-main">
-        <header className="main-header">
-          <h1>Security Operations Dashboard</h1>
-          <p>Real-time AI Outlier Detection & Anomaly Inspection</p>
-        </header>
+      <div className="dashboard-main">
+        <Navbar
+          user={user}
+          onLogout={logout}
+          onNavigate={onNavigate}
+          activeTab={activeTab}
+        />
 
         {error && <div className="error-banner">{error}</div>}
 
-        <FileUpload onAnalyze={handleAnalyze} loading={loading} />
+        {/* Row 1: File Upload and AI Prompt */}
+        <div className="top-row">
+          <FileUpload
+            onAnalyze={handleAnalyze}
+            onFileSelect={(file) => setSelectedFile(file)}
+            loading={loading}
+          />
+          <AIPrompt file={selectedFile} />
+        </div>
 
-        {data && (
-          <>
-            <SummaryCards summary={data.summary} />
+        {/* Row 2: Summary Cards */}
+        <SummaryCards summary={data?.summary || data?.summaryData} />
 
-            {/* CHARTS GRID SECTION */}
-            <div className="charts-grid">
-              
-              {/* Chart 1: Outlier Score Scatter Plot */}
-              <div className="chart-card">
-                <h4>Outlier Distribution Scatter</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                  <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis type="number" dataKey="x" name="Record" stroke="#94a3b8" />
-                    <YAxis type="number" dataKey="y" name="Score" stroke="#94a3b8" />
-                    <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-                    <Scatter
-                      name="Normal Points"
-                      data={scatterData.filter((d) => d.is_anomaly === 0)}
-                      fill="#38bdf8"
-                    />
-                    <Scatter
-                      name="Anomalies"
-                      data={scatterData.filter((d) => d.is_anomaly === 1)}
-                      fill="#ef4444"
-                    />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </div>
+        {/* Row 3: Graphs */}
+        <div className="graphs-row">
+          <div className="graph-large">
+            <GraphCard
+              title="Graph 1"
+              defaultType="line"
+              showDropdown={true}
+              records={data?.records}
+              loading={loading}
+            />
+          </div>
 
-              {/* Chart 2: Normal vs Anomaly Ratio */}
-              <div className="chart-card">
-                <h4>Normal vs Anomaly Count</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={barData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="name" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="Normal" fill="#22c55e" />
-                    <Bar dataKey="Anomaly" fill="#ef4444" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+          <div className="graph-small">
+            <GraphCard
+              title="Graph 2"
+              defaultType="doughnut"
+              showDropdown={false}
+              records={data?.records}
+              loading={loading}
+            />
+          </div>
+        </div>
 
-              {/* Chart 3: Anomaly Score Flow */}
-              <div className="chart-card full-width-chart">
-                <h4>Anomaly Decision Score Trend</h4>
-                <ResponsiveContainer width="100%" height={200}>
-                  <AreaChart data={scatterData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="x" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
-                    <Tooltip />
-                    <Area
-                      type="monotone"
-                      dataKey="y"
-                      stroke="#38bdf8"
-                      fill="#0284c7"
-                      fillOpacity={0.2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+        {/* Row 4: Saved analyses + Anomaly Table */}
+        <SavedAnalyses
+          items={saves}
+          onLoad={handleLoadSave}
+          onDelete={handleDeleteSave}
+        />
 
-            </div>
-
-            <AnomalyTable records={data.records} />
-          </>
-        )}
-      </main>
+        <AnomalyTable
+          records={data?.records}
+          onSave={handleSave}
+          saveState={saveState}
+        />
+      </div>
     </div>
   );
 }

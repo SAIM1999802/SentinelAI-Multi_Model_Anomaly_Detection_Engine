@@ -2,34 +2,39 @@ import React from "react";
 import "../styles/SummaryCards.css";
 
 export default function SummaryCards({ summary }) {
-  if (!summary) return null;
+  const algorithm = summary?.algorithm || summary?.model_name || "Isolation Forest";
+  
+  const totalRecords = summary?.total_records ?? summary?.totalRecords ?? 0;
+  const anomaliesFound = summary?.anomalies_found ?? summary?.anomaliesCount ?? 0;
+
+  const rawRate = summary?.anomaly_rate ?? summary?.anomalyPercentage ?? 0;
+  const anomalyRate = rawRate > 1 ? rawRate.toFixed(2) : (rawRate * 100).toFixed(2);
+
+  const processingTime = summary?.processing_time_seconds ?? summary?.executionTime ?? 0;
 
   return (
     <div className="summary-grid">
       <div className="summary-card active-model">
-        <h4>Selected Model</h4>
-        <p className="card-value model-value">{summary.algorithm || "Isolation Forest"}</p>
+        <span className="summary-label">Selected Model</span>
+        <span className="card-value model-value">{algorithm}</span>
       </div>
 
       <div className="summary-card">
-        <h4>Total Records</h4>
-        <p className="card-value">{summary.total_records}</p>
+        <span className="summary-label">Total Records</span>
+        <span className="card-value">{Number(totalRecords).toLocaleString()}</span>
       </div>
 
       <div className="summary-card anomaly-card">
-        <h4>Anomalies Detected</h4>
-        <p className="card-value anomaly-value">{summary.anomalies_found}</p>
+        <span className="summary-label">Anomalies Detected</span>
+        <span className="card-value anomaly-value">{Number(anomaliesFound).toLocaleString()}</span>
       </div>
 
       <div className="summary-card">
-        <h4>Anomaly Percentage</h4>
-        <p className="card-value">{(summary.anomaly_rate * 100).toFixed(2)}%</p>
+        <span className="summary-label">Anomaly Percentage</span>
+        <span className="card-value">{anomalyRate}%</span>
       </div>
 
-      <div className="summary-card">
-        <h4>Processing Time</h4>
-        <p className="card-value">{summary.processing_time_seconds}s</p>
-      </div>
+      
     </div>
   );
 }

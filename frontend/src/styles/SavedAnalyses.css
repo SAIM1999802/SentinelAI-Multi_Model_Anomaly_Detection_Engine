@@ -1,0 +1,92 @@
+.saved-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.25rem;
+    min-width: 0;
+  }
+  
+  .saved-title {
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: var(--text);
+  }
+  
+  .saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-height: 260px;      /* lagbhag 4 items, phir scroll */
+    overflow-y: auto;
+  }
+  
+  .saved-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  
+  .saved-item:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--bg2) 85%, var(--accent) 15%);
+  }
+  
+  .saved-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+  
+  .saved-name {
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .saved-meta {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  
+  .saved-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  
+  .saved-btn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  
+  .saved-btn:hover {
+    background: var(--card);
+    border-color: var(--accent);
+  }
+  
+  .saved-btn.danger {
+    color: var(--danger);
+  }
+  
+  .saved-btn.danger:hover {
+    border-color: var(--danger);
+  }

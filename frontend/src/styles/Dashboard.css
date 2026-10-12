@@ -1,81 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ===== VIOLET NEBULA THEME ===== */
+
 :root {
-    --bg-dark: #070c14;
-    --card-bg: #0d1527;
-    --border-cyan: #1e293b;
-    --glow-cyan: #00f2fe;
-    --neon-red: #ff3366;
-    --neon-blue: #38bdf8;
-    --text-main: #e2e8f0;
-    --text-muted: #64748b;
+  --bg: #09061a;
+  --bg2: #120c2b;
+  --card: #150f33;
+  --line: #2e2362;
+  --text: #efeaff;
+  --muted: #9a8fc4;
+  --accent: #a78bfa;
+  --accent2: #6366f1;
+  --danger: #fb7185;
+  --ok: #818cf8;
+  --glow: rgba(167, 139, 250, 0.2);
+  --btn-text: #0d0722;
+
+  --font-head: 'Sora', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* ===== GLOBAL ===== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+.dashboard-layout {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 500px at 85% -10%, var(--glow), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+.dashboard-main {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 2rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ===== ERROR MESSAGE ===== */
+
+.error-banner {
+  background-color: rgba(251, 113, 133, 0.2);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 0.85rem;
+  border-radius: 8px;
+}
+
+/* ===== TOP ROW ===== */
+
+.top-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+/* ===== GRAPHS ROW ===== */
+
+/* Graph 1 ko zyada width, Graph 2 compact; dono cards ki height barabar */
+.graphs-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(280px, 0.85fr);
+  gap: 1.5rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+.graph-large,
+.graph-small {
+  display: flex;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1000px) {
+  .top-row {
+    grid-template-columns: minmax(0, 1fr);
   }
-  
-  .dashboard-layout {
-    display: flex;
-    background-color: var(--bg-dark);
-    min-height: 100vh;
-    color: var(--text-main);
-    font-family: 'Inter', -apple-system, sans-serif;
+
+  .graphs-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+    gap: 1rem;
   }
-  
+
   .dashboard-main {
-    flex: 1;
-    padding: 1.5rem 2rem;
-    overflow-y: auto;
-    max-width: calc(100vw - 260px);
+    padding: 1rem;
   }
-  
-  .main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-cyan);
-    padding-bottom: 1rem;
+}
+
+@media (max-width: 650px) {
+  .graphs-row {
+    grid-template-columns: minmax(0, 1fr);
   }
-  
-  .main-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 0.5px;
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-  }
-  
-  .main-header p {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 2px;
-  }
-  
-  .charts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.25rem;
-    margin-top: 1.25rem;
-  }
-  
-  .chart-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-cyan);
-    border-radius: 12px;
-    padding: 1.25rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    backdrop-filter: blur(4px);
-    transition: border-color 0.3s ease;
-  }
-  
-  .chart-card:hover {
-    border-color: rgba(56, 189, 248, 0.4);
-  }
-  
-  .chart-card h4 {
-    margin: 0 0 1rem 0;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--neon-blue);
-  }
-  
-  .full-width-chart {
-    grid-column: 1 / -1;
-  }
+}

@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import "../styles/FileUpload.css";
 
-export default function FileUpload({ onAnalyze, loading }) {
+export default function FileUpload({ onAnalyze, onFileSelect, loading }) {
   const [file, setFile] = useState(null);
   const [algorithm, setAlgorithm] = useState("isolation_forest");
   const [contamination, setContamination] = useState(0.05);
   const [nEstimators, setNEstimators] = useState(100);
   const [nNeighbors, setNNeighbors] = useState(20);
   const [kernel, setKernel] = useState("rbf");
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (onFileSelect) {
+      onFileSelect(selectedFile); // Parent component ko file Object bhej raha hai
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,14 +36,14 @@ export default function FileUpload({ onAnalyze, loading }) {
 
   return (
     <div className="fileupload-card">
-      <h3 className="section-title">1. Data & Model Setup</h3>
+      <h3 className="section-title">Data & Model Setup</h3>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">Upload File (.csv, .xlsx):</label>
           <input
             type="file"
             accept=".csv, .xlsx, .xls"
-            onChange={(e) => setFile(e.target.files[0])}
+            onChange={handleFileChange}
             className="file-input"
           />
         </div>
@@ -118,7 +126,7 @@ export default function FileUpload({ onAnalyze, loading }) {
           </div>
         )}
 
-        <button type="submit" className="submit-btn" disabled={loading}>
+        <button type="submit" className="submit-btn" disabled={loading || !file}>
           {loading ? "Analyzing..." : "Detect Anomalies"}
         </button>
       </form>

@@ -13,7 +13,14 @@ def execute_oc_svm(
     """
     start_time = time.time()
 
-    numeric_df =  df.select_dtypes(include=[np.number]).dropna()
+    # 1. Pehle numeric columns select karein
+    numeric_df = df.select_dtypes(include=[np.number]).copy()
+
+# 2. Jo columns poore khali (NaN) hain unko drop karein
+    numeric_df = numeric_df.dropna(axis=1, how='all')
+
+# 3. Baaki bache numeric columns ke khali cells ko 0 se fill karein ya rows drop karein
+    numeric_df = numeric_df.fillna(0)
 
     if numeric_df.empty:
         for col in df.columns:

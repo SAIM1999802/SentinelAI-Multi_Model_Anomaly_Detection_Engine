@@ -1,0 +1,224 @@
+/* ===== GRAPH CARD ===== */
+
+.graph-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.25rem;
+
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  color: var(--text);
+}
+
+/* ===== HEADER ===== */
+
+.graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.graph-title {
+  font-family: var(--font-head);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+}
+
+/* ===== CHART CONTAINER ===== */
+
+.graph-container {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 315px;
+}
+
+/* Graph 2: doughnut chhota aur card ke beech mein */
+.graph-card-small .graph-container {
+  height: 260px;
+  max-width: 320px;
+  margin: auto;             /* vertical + horizontal center */
+}
+
+/* ===== EMPTY STATE ===== */
+
+.graph-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+
+  color: var(--muted);
+  font-size: 0.9rem;
+  background: var(--bg2);
+  border: 1.5px dashed var(--line);
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.graph-empty p {
+  margin: 0;
+  max-width: 260px;
+  line-height: 1.45;
+}
+
+.graph-empty-icon {
+  font-size: 1.8rem;
+}
+
+/* ===== CUSTOM THEMED DROPDOWN ===== */
+
+.graph-dropdown {
+  position: relative;
+  min-width: 160px;
+}
+
+.graph-dropdown-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.graph-dropdown-trigger:hover,
+.graph-dropdown-trigger:focus-visible {
+  background: var(--card);
+  border-color: var(--accent);
+  outline: none;
+}
+
+.graph-dropdown-caret {
+  color: var(--muted);
+  font-size: 0.85rem;
+  transition: transform 0.2s;
+}
+
+.graph-dropdown-caret.open {
+  transform: rotate(180deg);
+}
+
+.graph-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 100%;
+  z-index: 100;
+
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.graph-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+
+  padding: 0.7rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text);
+
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.graph-dropdown-item + .graph-dropdown-item {
+  border-top: 1px solid var(--line);
+}
+
+.graph-dropdown-item:hover {
+  background: var(--card);
+}
+
+.graph-dropdown-item.selected {
+  background: rgba(167, 139, 250, 0.15);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.graph-dropdown-icon {
+  font-size: 0.95rem;
+}
+
+/* ===== TABLET ===== */
+
+@media (max-width: 1000px) {
+  .graph-container {
+    height: 290px;
+  }
+
+  .graph-card-small .graph-container {
+    height: 230px;
+    max-width: 280px;
+  }
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 650px) {
+  .graph-card {
+    padding: 1rem;
+  }
+
+  .graph-container {
+    height: 260px;
+  }
+
+  .graph-card-small .graph-container {
+    height: 220px;
+    max-width: 260px;
+  }
+
+  .graph-title {
+    font-size: 1rem;
+  }
+
+  .graph-dropdown {
+    min-width: 140px;
+  }
+
+  .graph-dropdown-trigger {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.82rem;
+  }
+}
+
+.graph-note {
+  margin: 0.6rem 0 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
