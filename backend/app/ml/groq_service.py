@@ -35,7 +35,7 @@ DO NOT include introductory text, greetings, code snippets, or concluding remark
 def get_anomaly_recommendation(data_summary: dict) -> str:
     api_key = GROQ_API_KEY or os.getenv("GROQ_API_KEY")
     if not api_key:
-        api_key = "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"
+        api_key = "Your Groq Api Key"
         
     client = Groq(api_key=api_key)
 
